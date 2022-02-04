@@ -4,7 +4,7 @@
 - Permissions to create VM instances using RedHat or CentOS based distributions
 - Permissions to SSH
 - VPC with at least 1 subnet with outbound access to internet
-- Number of available IPs in subnet/s depends on the size of target cluster
+- Number of available IPs in subnet/s depending on the size of target cluster
 - Security Groups with necessary open ports mentioned here 
   https://kubernetes.io/docs/reference/ports-and-protocols/. You may create separate security groups for
   master node and worker node
