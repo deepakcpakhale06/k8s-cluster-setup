@@ -65,7 +65,7 @@ sudo systemctl enable --now kubelet
 
 ```
 
-### Step 2 (Setup of Control node)
+### Step 2 (Setup of master node)
 
 - SSH into target master node
 - Execute `kubeadm init`
