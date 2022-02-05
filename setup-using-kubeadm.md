@@ -7,7 +7,10 @@
 - Number of available IPs in subnet/s depending on the size of target cluster
 - Security Groups with necessary open ports mentioned here 
   https://kubernetes.io/docs/reference/ports-and-protocols/. You may create separate security groups for
-  master node and worker node
+  master node and worker node.
+  Also make sure TCP port 179 is opened for both worker 
+  and master nodes for calico BGP connectivity to work.
+  calico-nodes will fail the readiness probe without it.
   
 
 ### Step 1 (Boostrapping of the nodes)
@@ -16,6 +19,8 @@ Spin up at least 2 VM instances using following script as `user data`
 
 ```shell script
 #!/bin/bash
+
+K8S_VERSION_TO_INSTALL=1.23.3
 
 #Disable SWAP
 sudo sed -i '/swap/d' /etc/fstab
@@ -58,17 +63,16 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 exclude=kubelet kubeadm kubectl
 EOF
 
-#Install kubeadm which also install its compatible dependencies(kubelet and kubectl)
-sudo yum install -y kubeadm --disableexcludes=kubernetes
+#Install kubeadm,kubelet and kubectl
+sudo yum install -y kubeadm-$K8S_VERSION_TO_INSTALL kubectl-$K8S_VERSION_TO_INSTALL kubelet-$K8S_VERSION_TO_INSTALL --disableexcludes=kubernetes
 
 sudo systemctl enable --now kubelet
 
 ```
 
 ### Step 2 (Setup of master node)
-
 - SSH into target master node
-- Execute `kubeadm init`
+- Execute `kubeadm init --pod-network-cidr=192.168.0.0/16`
 - Copy and save output of `kubeadm init`. You will need to execute it from worker node.
 - Execute below script
 ```shell script
